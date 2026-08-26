@@ -5,6 +5,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/api/package.json apps/api/package.json
 RUN pnpm install --frozen-lockfile --filter api...
 COPY apps/api apps/api
+ARG DATABASE_URL
+
 RUN pnpm --filter api db:generate && pnpm --filter api build
 
 FROM node:24-alpine AS runtime

@@ -1,0 +1,32 @@
+﻿name: bestwash-dev
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: bestwash
+      POSTGRES_USER: bestwash
+      POSTGRES_PASSWORD: bestwash_local_dev
+
+    ports: ["5434:5432"]
+    volumes: ["bestwash_postgres_data:/var/lib/postgresql"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bestwash -d bestwash"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    command: redis-server --appendonly yes
+    ports: ["6380:6379"]
+    volumes: ["bestwash_redis_data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  bestwash_postgres_data:
+  bestwash_redis_data:

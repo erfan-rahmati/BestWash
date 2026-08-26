@@ -1,0 +1,25 @@
+{
+  "name": "bestwash",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BestWash car wash reservation PWA",
+  "packageManager": "pnpm@11.17.0",
+  "engines": {
+    "node": ">=24.11.0 <25",
+    "pnpm": ">=11.17.0 <12"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:e2e": "pnpm --filter api test:e2e"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6",
+    "turbo": "^2.10.8"
+  }
+}

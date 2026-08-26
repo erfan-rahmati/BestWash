@@ -1,0 +1,22 @@
+FROM node:24-alpine AS build
+RUN corepack enable
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY apps/api/package.json apps/api/package.json
+RUN pnpm install --frozen-lockfile --filter api...
+COPY apps/api apps/api
+RUN pnpm --filter api db:generate && pnpm --filter api build
+
+FROM node:24-alpine AS runtime
+RUN addgroup -S bestwash && adduser -S bestwash -G bestwash
+WORKDIR /app/apps/api
+ENV NODE_ENV=production PORT=3001
+COPY --from=build --chown=bestwash:bestwash /app/node_modules /app/node_modules
+COPY --from=build --chown=bestwash:bestwash /app/apps/api/node_modules ./node_modules
+COPY --from=build --chown=bestwash:bestwash /app/apps/api/package.json ./package.json
+COPY --from=build --chown=bestwash:bestwash /app/apps/api/dist ./dist
+COPY --from=build --chown=bestwash:bestwash /app/apps/api/prisma ./prisma
+COPY --from=build --chown=bestwash:bestwash /app/apps/api/prisma.config.ts ./prisma.config.ts
+USER bestwash
+EXPOSE 3001
+CMD ["node", "dist/src/main.js"]
